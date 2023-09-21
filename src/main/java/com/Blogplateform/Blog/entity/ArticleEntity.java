@@ -1,8 +1,11 @@
 package com.Blogplateform.Blog.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.springframework.stereotype.Component;
 
 @Entity
+@Component
 public class ArticleEntity {
 
     public ArticleEntity() {
@@ -14,7 +17,17 @@ public class ArticleEntity {
     private String articleName;
     private String description;
 @ManyToOne
+@JsonIgnore
 private BlogEntity blogentity;
+
+    public BlogEntity getBlogentity() {
+        return blogentity;
+    }
+
+    public void setBlogentity(BlogEntity blogentity) {
+        this.blogentity = blogentity;
+    }
+
     public ArticleEntity(String articleName, String description) {
         this.articleName = articleName;
         this.description = description;
