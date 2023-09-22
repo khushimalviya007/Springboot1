@@ -1,6 +1,5 @@
 package com.Blogplateform.Blog.controller;
 
-import com.Blogplateform.Blog.BlogApplication;
 import com.Blogplateform.Blog.entity.ArticleEntity;
 import com.Blogplateform.Blog.entity.BlogEntity;
 import com.Blogplateform.Blog.repository.IArticle;
@@ -39,7 +38,8 @@ public class BlogController {
             Optional<BlogEntity> op = blog.findById(id);
             return op.get();
         } catch (Exception e) {
-            System.out.println(e);
+
+            System.out.println("No Blogger found");
         }
         return null;
     }
@@ -56,15 +56,16 @@ public class BlogController {
         return null;
     }
 
-    //Delete blogger
+
+    //Delete blogger with their articles
     @DeleteMapping("/{id}")
-    public boolean deleteById(@PathVariable Long id) {
+    public String deleteById(@PathVariable Long id) {
         try {
             blog.deleteById(id);
-            return true;
+            return "Blogger deleted successfully";
         } catch (Exception e) {
             System.out.println(e);
-            return false;
+            return "Blogger not found";
         }
     }
 
@@ -94,7 +95,6 @@ public class BlogController {
         }
     }
 
-
     //Find all article
     @GetMapping("//")
     public List<ArticleEntity> get1() {
@@ -105,19 +105,6 @@ public class BlogController {
         }
         return null;
     }
-
-    //article delete by id
-    @DeleteMapping("/article{id}")
-    public boolean deleteByIdArticle(@PathVariable Long id) {
-        try {
-            article.deleteById(id);
-            return true;
-        } catch (Exception e) {
-            System.out.println(e);
-            return false;
-        }
-    }
-
 
 
     //blogger save then show that blogger
@@ -130,48 +117,84 @@ public class BlogController {
 
     //save then give id for foreign key and then save article
     @PostMapping("/save/{id}/savearticle")
-    public ArticleEntity save1(@RequestBody ArticleEntity article1) {
-        System.out.println(article1.getArticleName());
-        System.out.println(article1.getId());
-        System.out.println(article1.getDescription());
-        return article.save(article1);
+    public ResponseEntity<String> save1(@PathVariable Long id, @RequestBody ArticleEntity article1) {
+        Optional<BlogEntity> blogEntity = blog.findById(id);
+        if (blogEntity.isPresent()) {
+            BlogEntity b = blogEntity.get();
+            article1.setBlogentity(b);
+            article.save(article1);
+            return ResponseEntity.ok("article saved for this blogger Id " + id);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 
     // showing articles by id of bolgger
-
-        @GetMapping("/{id}/articles")
-        public List<ArticleEntity> getList(@PathVariable Long id) {
+    @GetMapping("/{id}/articles")
+    public List<ArticleEntity> getList(@PathVariable Long id) {
         try {
             Optional<BlogEntity> bl = blog.findById(id);
-            if(bl.isPresent()){
-            BlogEntity blog = bl.get();
-            return blog.getArticlelist();
-            }else{
+            if (bl.isPresent()) {
+                BlogEntity blog = bl.get();
+                return blog.getArticlelist();
+            } else {
                 System.out.println("no such data found");
             }
-        }catch(Exception e)
-        {
+        } catch (Exception e) {
             System.out.println(e);
         }
-            return null;
-        }
+        return null;
+    }
 
-    @Autowired
-    ArticleEntity article11;
-//correction needed
-    @DeleteMapping("/{blogId}/deletearticle/{articleId}")
-    public String deleteArticle(@PathVariable Long blogId, @PathVariable Long articleId) {
-        Optional<BlogEntity> blogger = blog.findById(blogId);
-        if (blogger.isPresent()) {
-            BlogEntity blogg = blogger.get();
-            if (blogg.getId(blogId) == articleId) {
-                article.deleteById(articleId);
-                return "Article deleted successfully ";
+    //update article with blogger id
+    @PutMapping("/{blogId}/{articleId}/art")
+    public ArticleEntity updateArticle(@PathVariable Long blogId, @PathVariable Long articleId, @RequestBody ArticleEntity art) {
+        Optional<BlogEntity> optionalBlog = blog.findById(blogId);
+        if (!optionalBlog.isPresent()) {
+            System.out.println("blogger not found");
+        }
+        Optional<ArticleEntity> optionalArticle = article.findById(articleId);
+        if (!optionalArticle.isPresent()) {
+            System.out.println("Article not found");
+        }
+        Optional<BlogEntity> bl = blog.findById(blogId);
+        if (bl.isPresent()) {
+            BlogEntity blog = bl.get();
+            List<ArticleEntity> li = blog.getArticlelist();
+            Optional<ArticleEntity> optionalArticleEntity = li.stream().filter(list -> articleId == list.getId()).findFirst();
+            if (optionalArticleEntity.isPresent()) {
+                ArticleEntity update = article.findById(articleId).orElseThrow(() -> new EntityNotFoundException("blog not found"));
+                update.setArticleName(art.getArticleName());
+                update.setDescription(art.getDescription());
+                return article.save(update);
             } else {
-                return "article not found";
+                System.out.println("id not found");
             }
         }
-        return "blogger not found";
+        return null;
+    }
+
+    //delete paticular article
+    @DeleteMapping("/{blogId}/delete/{articleId}")
+    public String deleteArticle(@PathVariable Long blogId, @PathVariable Long articleId) {
+
+        Optional<BlogEntity> optionalBlog = blog.findById(blogId);
+        if (!optionalBlog.isPresent()) {
+            return "blogger not found";
+        }
+        Optional<ArticleEntity> optionalArticle = article.findById(articleId);
+        if (!optionalArticle.isPresent()) {
+            return "article not found";
+        }
+        BlogEntity blogg = optionalBlog.get();
+        ArticleEntity articlee = optionalArticle.get();
+        if (!blogg.getArticlelist().contains(articlee)) {
+            return "Article not found";
+        }
+        blogg.getArticlelist().remove(articlee);
+        blog.save(blogg);
+        article.delete(articlee);
+        return "delete article";
     }
 }

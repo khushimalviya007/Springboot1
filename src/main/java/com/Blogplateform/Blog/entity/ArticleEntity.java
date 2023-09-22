@@ -13,12 +13,22 @@ public class ArticleEntity {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE) private long id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private long id;
     private String articleName;
     private String description;
-@ManyToOne
-@JsonIgnore
-private BlogEntity blogentity;
+    @ManyToOne
+    @JsonIgnore
+    private BlogEntity blogentity;
+    @Override
+    public String toString() {
+        return "ArticleEntity{" +
+                "id=" + id +
+                ", articleName='" + articleName + '\'' +
+                ", description='" + description + '\'' +
+                ", blogentity=" + blogentity +
+                '}';
+    }
 
     public BlogEntity getBlogentity() {
         return blogentity;
@@ -32,9 +42,11 @@ private BlogEntity blogentity;
         this.articleName = articleName;
         this.description = description;
     }
+
     public long getId() {
         return id;
     }
+
     public void setId(long id) {
         this.id = id;
     }

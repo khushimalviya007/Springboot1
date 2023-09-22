@@ -11,7 +11,7 @@ public class BlogEntity {
     private long id;
     private String name;
     private String email;
-    @OneToMany(mappedBy = "blogentity")
+    @OneToMany(mappedBy = "blogentity" ,cascade =CascadeType.ALL,fetch= FetchType.EAGER)
     private List<ArticleEntity> articlelist;
 
     public void setId(Long id) {
