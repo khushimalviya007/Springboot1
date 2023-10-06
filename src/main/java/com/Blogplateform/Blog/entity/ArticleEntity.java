@@ -22,7 +22,7 @@ public class ArticleEntity {
     private String description;
     @ManyToOne
     @JsonIgnore
-    @JsonBackReference
+//    @JsonBackReference
     private BlogEntity blogentity;
     @Override
     public String toString() {

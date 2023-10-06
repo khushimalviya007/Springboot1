@@ -22,7 +22,7 @@ public class BlogEntity {
     private String name;
     private String email;
     @OneToMany(mappedBy = "blogentity" ,cascade =CascadeType.ALL)
-    @JsonManagedReference
+//    @JsonManagedReference
     private List<ArticleEntity> articlelist;
 
 
