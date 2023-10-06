@@ -1,5 +1,6 @@
 package com.Blogplateform.Blog.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ public class ArticleEntity {
     private String description;
     @ManyToOne
     @JsonIgnore
+    @JsonBackReference
     private BlogEntity blogentity;
     @Override
     public String toString() {
@@ -32,9 +34,6 @@ public class ArticleEntity {
                 '}';
     }
 
-    public BlogEntity getBlogentity() {
-        return blogentity;
-    }
 
     public void setBlogentity(BlogEntity blogentity) {
         this.blogentity = blogentity;

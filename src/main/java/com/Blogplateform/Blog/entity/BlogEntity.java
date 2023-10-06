@@ -1,5 +1,6 @@
 package com.Blogplateform.Blog.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -20,9 +21,8 @@ public class BlogEntity {
 
     private String name;
     private String email;
-    @OneToMany(mappedBy = "blogentity" ,cascade =CascadeType.ALL
-
-            ,fetch= FetchType.EAGER)
+    @OneToMany(mappedBy = "blogentity" ,cascade =CascadeType.ALL)
+    @JsonManagedReference
     private List<ArticleEntity> articlelist;
 
 

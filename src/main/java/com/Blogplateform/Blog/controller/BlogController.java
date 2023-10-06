@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 @RequestMapping("/blogger")
 public class BlogController {
     @Autowired
@@ -82,6 +82,7 @@ public class BlogController {
     }
 
 
+
     //Save article with paticular blogger id
     @PostMapping("/{id}/savearticle")
     public ResponseEntity<String> save(@PathVariable Long id, @RequestBody ArticleEntity article1) {
@@ -142,6 +143,21 @@ public class BlogController {
         return null;
     }
 
+    @PutMapping("/articles/{articleId}")
+    public ArticleEntity updateArticle(@PathVariable Long articleId, @RequestBody ArticleEntity updatedArticle) {
+        Optional<ArticleEntity> optionalArticle = article.findById(articleId);
+        if (!optionalArticle.isPresent()) {
+            System.out.println("Article not found");
+            return null;
+        }
+
+        ArticleEntity existingArticle = optionalArticle.get();
+        existingArticle.setArticleName(updatedArticle.getArticleName());
+        existingArticle.setDescription(updatedArticle.getDescription());
+
+        return article.save(existingArticle);
+    }
+
     //update article with blogger id
     @PutMapping("/{blogId}/{articleId}/art")
     public ArticleEntity updateArticle(@PathVariable Long blogId, @PathVariable Long articleId, @RequestBody ArticleEntity art) {
@@ -193,16 +209,8 @@ public class BlogController {
         return "delete article";
     }
     @DeleteMapping("/delete/{articleId}")
-    public ResponseEntity<String> deleteBook(@PathVariable Long articleId) {
-        System.out.println(articleId);
-        Optional<ArticleEntity> bookOptional = article.findById(articleId);
-
-        if (bookOptional.isPresent()) {
-            ArticleEntity book = bookOptional.get();
-            article.delete(book);
-            return ResponseEntity.ok("article Deleted");
-        }
-
-        return ResponseEntity.notFound().build();
+    public boolean deleteBook(@PathVariable Long articleId) {
+        article.deleteById(articleId);
+        return  true;
     }
 }
