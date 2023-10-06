@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/blogger")
 public class BlogController {
     @Autowired
@@ -96,14 +97,9 @@ public class BlogController {
     }
 
     //Find all article
-    @GetMapping("//")
+    @GetMapping("/articles")
     public List<ArticleEntity> get1() {
-        try {
-            return article.findAll();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        return null;
+        return article.findAll();
     }
 
 
@@ -117,15 +113,14 @@ public class BlogController {
 
     //save then give id for foreign key and then save article
     @PostMapping("/save/{id}/savearticle")
-    public ResponseEntity<String> save1(@PathVariable Long id, @RequestBody ArticleEntity article1) {
+    public ArticleEntity save1(@PathVariable Long id, @RequestBody ArticleEntity article1) {
         Optional<BlogEntity> blogEntity = blog.findById(id);
         if (blogEntity.isPresent()) {
             BlogEntity b = blogEntity.get();
             article1.setBlogentity(b);
-            article.save(article1);
-            return ResponseEntity.ok("article saved for this blogger Id " + id);
+            return article.save(article1);
         } else {
-            return ResponseEntity.notFound().build();
+            return null;
         }
     }
 
@@ -196,5 +191,18 @@ public class BlogController {
         blog.save(blogg);
         article.delete(articlee);
         return "delete article";
+    }
+    @DeleteMapping("/delete/{articleId}")
+    public ResponseEntity<String> deleteBook(@PathVariable Long articleId) {
+        System.out.println(articleId);
+        Optional<ArticleEntity> bookOptional = article.findById(articleId);
+
+        if (bookOptional.isPresent()) {
+            ArticleEntity book = bookOptional.get();
+            article.delete(book);
+            return ResponseEntity.ok("article Deleted");
+        }
+
+        return ResponseEntity.notFound().build();
     }
 }

@@ -16,6 +16,8 @@ public class ArticleEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
     private String articleName;
+
+
     private String description;
     @ManyToOne
     @JsonIgnore
@@ -37,7 +39,6 @@ public class ArticleEntity {
     public void setBlogentity(BlogEntity blogentity) {
         this.blogentity = blogentity;
     }
-
     public ArticleEntity(String articleName, String description) {
         this.articleName = articleName;
         this.description = description;

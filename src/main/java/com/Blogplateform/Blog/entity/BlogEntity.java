@@ -9,14 +9,22 @@ public class BlogEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
-    private String name;
-    private String email;
-    @OneToMany(mappedBy = "blogentity" ,cascade =CascadeType.ALL,fetch= FetchType.EAGER)
-    private List<ArticleEntity> articlelist;
 
-    public void setId(Long id) {
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
         this.id = id;
     }
+
+    private String name;
+    private String email;
+    @OneToMany(mappedBy = "blogentity" ,cascade =CascadeType.ALL
+
+            ,fetch= FetchType.EAGER)
+    private List<ArticleEntity> articlelist;
+
 
     public List<ArticleEntity> getArticlelist() {
         return articlelist;
@@ -26,9 +34,6 @@ public class BlogEntity {
         this.articlelist = articlelist;
     }
 
-    public long getId(Long blogId) {
-        return id;
-    }
 
     public String getName() {
         return name;
